@@ -1,7 +1,5 @@
 package me.glatteis.sequencer
 
-import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH
-import me.glatteis.sequencer.ui.BootupSequence
 import me.glatteis.sequencer.ui.Screen
 import me.glatteis.sequencer.ui.SequenceOverview
 import javax.sound.midi.*
@@ -59,15 +57,29 @@ class Sequencer {
                 if (message is ShortMessage) {
                     val key = message.data1
                     val velocity = message.data2
-                    val x = key % 16
-                    val y = key / 16
-                    if (velocity == 0) {
-                        currentScreen.inputOff(x, y)
-                    } else {
-                        currentScreen.inputOn(x, y)
+                    if (message.command == 144) {
+                        val x = key % 16
+                        val y = key / 16
+                        if (x < 9 && y < 8) {
+                            if (velocity == 0) {
+                                currentScreen.inputOff(x, y)
+                            } else {
+                                currentScreen.inputOn(x, y)
+                            }
+                        }
+                    } else if (message.command == 176) {
+                        if (key in 104..111) {
+                            if (velocity == 0) {
+                                currentScreen.inputBarOff(key - 104)
+                            } else {
+                                currentScreen.inputBarOn(key - 104)
+                            }
+                        }
                     }
+
                 }
             }
+
             override fun close() {
             }
         }

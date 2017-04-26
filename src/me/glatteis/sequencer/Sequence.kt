@@ -7,6 +7,12 @@ class Sequence {
 
     val notes = ArrayList<Byte>()
     var length = 8
+    set(value) {
+        if (notes.size < value) {
+            expandTo(value - 1)
+        }
+        field = value
+    }
     var currentStep = 0
 
     init {
@@ -22,6 +28,13 @@ class Sequence {
 
     fun getStepValue(): Byte {
         return notes[currentStep]
+    }
+
+    fun expandTo(length: Int) {
+        println("expanding sequence to $length")
+        for (i in notes.size..length) {
+            notes.add(0)
+        }
     }
 
 }

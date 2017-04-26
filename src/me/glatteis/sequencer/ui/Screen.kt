@@ -9,5 +9,6 @@ interface Screen {
     fun drawUpdate()
     fun inputOn(x: Int, y: Int)
     fun inputOff(x: Int, y: Int)
-    fun inputBar(x: Int)
+    fun inputBarOn(x: Int)
+    fun inputBarOff(x: Int)
 }
