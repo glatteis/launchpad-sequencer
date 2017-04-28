@@ -2,7 +2,6 @@ package me.glatteis.sequencer
 
 import javax.sound.midi.MidiDevice
 import javax.sound.midi.ShortMessage
-import javax.sound.midi.Synthesizer
 
 /**
  * Created by Linus on 31.03.2017!
