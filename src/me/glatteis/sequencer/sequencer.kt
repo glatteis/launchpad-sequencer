@@ -1,10 +1,11 @@
 package me.glatteis.sequencer
 
+import me.glatteis.sequencer.sequencing.DrumSequenceHandler
+import me.glatteis.sequencer.sequencing.InstrumentSequenceHandler
 import me.glatteis.sequencer.sequencing.SequenceHandler
 import me.glatteis.sequencer.ui.Screen
 import me.glatteis.sequencer.ui.SequenceOverview
 import javax.sound.midi.*
-import kotlin.concurrent.timer
 
 
 /**
@@ -18,7 +19,7 @@ fun main(args: Array<String>) {
 class Sequencer {
     var launchpad: Launchpad? = null
 
-    val sequenceHandler: SequenceHandler
+    val tracks = ArrayList<SequenceHandler>()
 
     val sequenceOverview: SequenceOverview
 
@@ -29,9 +30,10 @@ class Sequencer {
     init {
         setupLaunchpad()
 
-        sequenceHandler = SequenceHandler()
+        tracks.add(InstrumentSequenceHandler())
+        tracks.add(DrumSequenceHandler())
 
-        sequenceOverview = SequenceOverview(this, sequenceHandler)
+        sequenceOverview = SequenceOverview(this, tracks[0])
         currentScreen = sequenceOverview
 
         clock = Clock(this)
@@ -122,8 +124,8 @@ class Sequencer {
     }
 
     fun step() {
-        for (sequence in sequenceHandler.sequences) {
-            sequence.step()
+        for (sequenceHandler in tracks) {
+            sequenceHandler.step()
         }
         currentScreen.drawUpdate()
     }

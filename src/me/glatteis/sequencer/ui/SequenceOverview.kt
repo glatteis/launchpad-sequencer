@@ -66,7 +66,7 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
             if (currentStep in scrollHorizontal..scrollHorizontal + 7) {
                 if (sequence.getStepValue() == 0.toByte()) {
                     sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, currentStep - scrollHorizontal, Color(0, 1))
-                } else {
+                } else if (!sequenceHandler.paused) {
                     sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, currentStep - scrollHorizontal, Color(2, 3))
                 }
             }
@@ -84,14 +84,6 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
                 sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, displayStep, Color(3, 2))
             }
         }
-        if (sequence.currentStep in scrollHorizontal..scrollHorizontal + 7) {
-            if (sequence.getStepValue() == 0.toByte()) {
-                sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, sequence.currentStep - scrollHorizontal, Color(0, 1))
-            } else {
-                sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, sequence.currentStep - scrollHorizontal, Color(2, 3))
-            }
-        }
-
     }
 
     override fun inputOn(x: Int, y: Int) {
@@ -182,14 +174,23 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
             5 -> {
                 sequencer.launchpad?.setRowLedOn(5, Color(0, 3))
                 shift1Pressed = true
+                if (shift1Pressed && shift2Pressed && shiftPressed) {
+                    sequenceHandler.paused = !sequenceHandler.paused
+                }
             }
             6 -> {
                 sequencer.launchpad?.setRowLedOn(6, Color(3, 0))
                 shift2Pressed = true
+                if (shift1Pressed && shift2Pressed && shiftPressed) {
+                    sequenceHandler.paused = !sequenceHandler.paused
+                }
             }
             7 -> {
                 sequencer.launchpad?.setRowLedOn(7, Color(3, 3))
                 shiftPressed = true
+                if (shift1Pressed && shift2Pressed && shiftPressed) {
+                    sequenceHandler.paused = !sequenceHandler.paused
+                }
             }
         }
     }

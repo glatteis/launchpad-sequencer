@@ -5,10 +5,12 @@ import me.glatteis.sequencer.sequencing.Sequence
 /**
  * Created by Linus on 02.04.2017!
  */
-class SequenceHandler {
+abstract class SequenceHandler {
 
-    val sequences = Array(128) {
-        Sequence()
-    }
+    var paused = false
+
+    abstract val sequences: Array<Sequence>
+
+    abstract fun step()
 
 }
