@@ -3,6 +3,8 @@ package me.glatteis.sequencer.ui
 import me.glatteis.sequencer.Color
 import me.glatteis.sequencer.Launchpad
 import me.glatteis.sequencer.Sequencer
+import me.glatteis.sequencer.sequencing.DrumSequence
+import me.glatteis.sequencer.sequencing.DrumSequenceHandler
 import me.glatteis.sequencer.sequencing.SequenceHandler
 
 /**
@@ -20,17 +22,16 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
                 val displayStep = step - scrollHorizontal
                 if (sequenceHandler.sequences.size <= sequenceNum ||
                         sequenceHandler.sequences[sequenceNum].notes.size <= step) {
-                    sequencer.launchpad?.bufferGridLedOff(sequenceNum - scrollVertical, displayStep)
+                    sequencer.launchpad?.bufferGridLedOff(displayStep, sequenceNum - scrollVertical)
                     continue
                 }
                 val sequence = sequenceHandler.sequences[sequenceNum]
                 val note = sequence.notes[step]
 
                 if (note == 0.toByte()) {
-                    sequencer.launchpad?.bufferGridLedOff(sequenceNum - scrollVertical, displayStep)
+                    sequencer.launchpad?.bufferGridLedOff(displayStep, sequenceNum - scrollVertical)
                 } else {
-
-                    sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, displayStep, Color(3, 2))
+                    sequencer.launchpad?.bufferGridLedOn(displayStep, sequenceNum - scrollVertical, Color(3, 2))
                 }
             }
         }
@@ -57,17 +58,17 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
             val previousCurrentStep = sequence.start + Math.floorMod(currentStep - sequence.start - 1, sequence.end - sequence.start)
             if (previousCurrentStep in scrollHorizontal..scrollHorizontal + 7) {
                 if (sequence.notes[previousCurrentStep] == 0.toByte()) {
-                    sequencer.launchpad?.bufferGridLedOff(sequenceNum - scrollVertical, previousCurrentStep - scrollHorizontal)
+                    sequencer.launchpad?.bufferGridLedOff(previousCurrentStep - scrollHorizontal, sequenceNum - scrollVertical)
                 } else {
-                    sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, previousCurrentStep - scrollHorizontal, Color(3, 2))
+                    sequencer.launchpad?.bufferGridLedOn(previousCurrentStep - scrollHorizontal, sequenceNum - scrollVertical, Color(3, 2))
                 }
             }
 
             if (currentStep in scrollHorizontal..scrollHorizontal + 7) {
                 if (sequence.getStepValue() == 0.toByte()) {
-                    sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, currentStep - scrollHorizontal, Color(0, 1))
+                    sequencer.launchpad?.bufferGridLedOn(currentStep - scrollHorizontal, sequenceNum - scrollVertical, Color(0, 1))
                 } else if (!sequenceHandler.paused) {
-                    sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, currentStep - scrollHorizontal, Color(2, 3))
+                    sequencer.launchpad?.bufferGridLedOn(currentStep - scrollHorizontal, sequenceNum - scrollVertical, Color(2, 3))
                 }
             }
         }
@@ -75,18 +76,21 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
 
     fun bufferFullSequence(sequenceNum: Int) {
         val sequence = sequenceHandler.sequences[sequenceNum]
+        val scrollHorizontal = scrollHorizontal
         for (step in scrollHorizontal..scrollHorizontal + 7) {
             val displayStep = step - scrollHorizontal
             val note = sequence.notes[step]
             if (note == 0.toByte()) {
-                sequencer.launchpad?.bufferGridLedOff(sequenceNum - scrollVertical, displayStep)
+                sequencer.launchpad?.bufferGridLedOff(displayStep, sequenceNum - scrollVertical)
             } else {
-                sequencer.launchpad?.bufferGridLedOn(sequenceNum - scrollVertical, displayStep, Color(3, 2))
+                sequencer.launchpad?.bufferGridLedOn(displayStep, sequenceNum - scrollVertical, Color(3, 2))
             }
         }
     }
 
     override fun inputOn(x: Int, y: Int) {
+        val scrollVertical = scrollVertical
+        val scrollHorizontal = scrollHorizontal
         if (x in 0..7 && y in 0..7) {
             val sequenceNum = y + scrollVertical
             val step = x + scrollHorizontal
@@ -122,16 +126,26 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
                 if (sequence.notes[step] > 0) {
                     sequence.notes[step] = 0
                     if (sequence.currentStep == step) {
-                        sequencer.launchpad?.setGridLedOn(sequenceNum - scrollVertical, step - scrollHorizontal, Color(0, 1))
+                        sequencer.launchpad?.setGridLedOn(step - scrollHorizontal, sequenceNum - scrollVertical, Color(0, 1))
                     } else {
-                        sequencer.launchpad?.setGridLedOff(sequenceNum - scrollVertical, step - scrollHorizontal)
+                        sequencer.launchpad?.setGridLedOff(step - scrollHorizontal, sequenceNum - scrollVertical)
                     }
                 } else {
                     sequence.notes[step] = 127
 
-                    sequencer.launchpad?.setGridLedOn(sequenceNum - scrollVertical, step - scrollHorizontal, Color(3, 2))
+                    sequencer.launchpad?.setGridLedOn(step - scrollHorizontal, sequenceNum - scrollVertical, Color(3, 2))
 
                 }
+            }
+        }
+        if (x == 8) {
+            if (sequenceHandler is DrumSequenceHandler) {
+                val sequenceNum = scrollVertical + y
+                if (sequenceHandler.sequences.size <= sequenceNum) return
+                val sequence = sequenceHandler.sequences[sequenceNum] as DrumSequence
+                val screen = DrumSequenceSettingsScreen(sequence, sequencer, this)
+                sequencer.currentScreen = screen
+                screen.drawFull()
             }
         }
     }
@@ -166,7 +180,7 @@ class SequenceOverview(val sequencer: Sequencer, val sequenceHandler: SequenceHa
             4 -> {
                 if (shiftPressed) {
                     for (s in sequenceHandler.sequences) {
-                        s.currentStep = s.end
+                        s.currentStep = s.end - 1
                     }
                 }
                 drawFull()

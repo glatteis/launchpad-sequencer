@@ -30,8 +30,8 @@ class Sequencer {
     init {
         setupLaunchpad()
 
-        tracks.add(InstrumentSequenceHandler())
         tracks.add(DrumSequenceHandler())
+        tracks.add(InstrumentSequenceHandler())
 
         sequenceOverview = SequenceOverview(this, tracks[0])
         currentScreen = sequenceOverview
@@ -72,18 +72,6 @@ class Sequencer {
                 deviceOut = MidiSystem.getMidiDevice(o)
                 deviceIn.open()
                 deviceOut.open()
-
-                //Draw three nice dots on the Launchpad
-                val temporaryLaunchpad = Launchpad(deviceOut)
-                temporaryLaunchpad.clearScreen()
-
-                for (y1 in 0..2) {
-                    for (y2 in 0..1) {
-                        for (x in 3..4) {
-                            temporaryLaunchpad.setGridLedOn(x, y1 * 3 + y2, Color(y1 + 1, y1 + 1))
-                        }
-                    }
-                }
             } catch (e: Exception) {
                 println("Device ${i.name} could not be opened.")
                 continue
@@ -91,6 +79,8 @@ class Sequencer {
 
             openDevices.add(deviceIn)
             openDevices.add(deviceOut)
+
+            println("Please tap on your Launchpad.")
 
             deviceIn.transmitter.receiver = object : Receiver {
                 override fun send(message: MidiMessage?, timeStamp: Long) {
@@ -119,7 +109,6 @@ class Sequencer {
             }
 
         }
-
 
     }
 

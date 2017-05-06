@@ -22,27 +22,27 @@ class Launchpad(val device: MidiDevice) {
 
     fun setGridLedOn(x: Int, y: Int, color: Color, offset: Int = 0) {
         if (x !in 0..8 || y !in 0..7) throw RuntimeException("x / y have to be in range 0-8 / 0-7")
-        val key = x * 16 + y
+        val key = y * 16 + x
         val message = ShortMessage(144, key, color.asByte() + 12)
         device.receiver.send(message, device.microsecondPosition + offset)
     }
 
     fun bufferGridLedOn(x: Int, y: Int, color: Color, offset: Int = 0) {
         if (x !in 0..8 || y !in 0..7) throw RuntimeException("x / y have to be in range 0-8 / 0-7")
-        val key = x * 16 + y
+        val key = y * 16 + x
         val message = ShortMessage(144, key, color.asByte())
         device.receiver.send(message, device.microsecondPosition + offset)
     }
 
     fun setGridLedOff(x: Int, y: Int, offset: Int = 0) {
         if (x !in 0..8 || y !in 0..7) throw RuntimeException("x / y have to be in range 0-8 / 0-7")
-        val key = x * 16 + y
+        val key = y * 16 + x
         device.receiver.send(ShortMessage(128, key, 12), device.microsecondPosition + offset)
     }
 
     fun bufferGridLedOff(x: Int, y: Int, offset: Int = 0) {
         if (x !in 0..8 || y !in 0..7) throw RuntimeException("x / y have to be in range 0-8 / 0-7")
-        val key = x * 16 + y
+        val key = y * 16 + x
         device.receiver.send(ShortMessage(128, key, 0), device.microsecondPosition + offset)
     }
 

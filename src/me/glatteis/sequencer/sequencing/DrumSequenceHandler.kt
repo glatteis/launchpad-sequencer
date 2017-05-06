@@ -5,8 +5,12 @@ package me.glatteis.sequencer.sequencing
  */
 class DrumSequenceHandler : SequenceHandler() {
 
-    override val sequences = Array<Sequence>(128) {
-        DrumSequence()
+    override val sequences = ArrayList<Sequence>()
+
+    init {
+        for (i in 0..15) {
+            sequences.add(DrumSequence())
+        }
     }
 
     override fun step() {

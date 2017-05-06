@@ -4,6 +4,8 @@ package me.glatteis.sequencer.sequencing
  * Created by Linus on 02.04.2017!
  */
 class DrumSequence : Sequence {
+
+
     override val notes = ArrayList<Byte>()
     override var end = 8
     set(value) {
@@ -14,6 +16,10 @@ class DrumSequence : Sequence {
     }
     override var start = 0
     override var currentStep = 0
+
+    //The notes and channels on which this drum sequence will output data
+    var note: Byte = 0
+    var channel = 0
 
     var paused = false
 

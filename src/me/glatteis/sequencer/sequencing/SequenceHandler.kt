@@ -9,7 +9,7 @@ abstract class SequenceHandler {
 
     var paused = false
 
-    abstract val sequences: Array<Sequence>
+    abstract val sequences: List<Sequence>
 
     abstract fun step()
 

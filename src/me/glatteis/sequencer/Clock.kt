@@ -9,7 +9,7 @@ class Clock(sequencer: Sequencer) {
 
     private var halfStep = false
 
-    val clockTimer = timer(period = 60000 / 400) {
+    val clockTimer = timer(period = 60000 / 300) {
         if (halfStep) {
             sequencer.launchpad?.setRowLedOn(4, Color(3, 0), 100)
         } else {

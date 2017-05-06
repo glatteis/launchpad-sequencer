@@ -11,9 +11,9 @@ class InstrumentSequenceHandler : SequenceHandler() {
     var end = 8
     var currentStep = 0
 
-    override val sequences: Array<Sequence> = Array(128) {
+    override val sequences = Array(128) {
         InstrumentSequence(this)
-    }
+    }.toList()
 
     init {
         println(end)
